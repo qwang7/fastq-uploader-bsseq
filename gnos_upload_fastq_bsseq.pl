@@ -12,7 +12,7 @@ use Data::UUID;
 use FindBin qw($Bin);
 use lib "$Bin/../gt-download-upload-wrapper/lib/";
 
-use GNOS::Upload;
+#use GNOS::Upload;
 
 #########################################################################################################
 # DESCRIPTION                                                                                           #
@@ -22,6 +22,21 @@ use GNOS::Upload;
 # specified GNOS repository                                                                             #
 # See https://github.com/SeqWare/public-workflows/blob/develop/fastq-uploader/README.md                 #
 # Also see https://wiki.oicr.on.ca/display/PANCANCER/PCAWG+RNA-Seq+fastq+Sequence+Submission+SOP+-+v0.9 #
+#########################################################################################################
+
+#########################################################################################################
+# Changes made compared with gnos_upload_fastq.pl                                                       #
+#########################################################################################################
+# 1. There is not  spike_ins_concentration in the meta data anymore, as it is not relevant for the WGBS #
+# 2. spike_ins_fasta is changed to spike_ins_content, so that it is not needed to provide fastq         #
+# 3. Hard coded RNA-seq messages in the meta file changed to WGBS and                                   #
+#    LIBRARY_STRATEGY to Bisulfite-Seq                                                                  #
+#    LIBRARY_SOURCE to GENOMIC                                                                          #
+# 4. Delete <SPOT_DESCRIPTOR> section from xml                                                          #
+# 5. Change the code name to gnos_upload_fastq_bsseq.pl, but keep the version number,                   #
+#    so it is more clear from which point the branching happens                                         #
+# 6. my $sample_uuid = $m->{SM}; is never used in the script, and SM is the same as aliquot_id,         #
+#    thus my $aliquot_id = $m->{SM};                                                                    #
 #########################################################################################################
 
 #############
@@ -149,13 +164,13 @@ unless ( exists $metad->{includes_spike_ins} ) {
     $metad->{includes_spike_ins} = 'no';
 }
 
-unless ( exists $metad->{spike_ins_fasta} ) {
-    $metad->{spike_ins_fasta} = 'N/A';
+unless ( exists $metad->{spike_ins_content} ) {
+    $metad->{spike_ins_content} = 'N/A';
 }
 
-unless ( exists $metad->{spike_ins_concentration} ) {
-    $metad->{spike_ins_concentration} = 'N/A';
-}
+#unless ( exists $metad->{spike_ins_concentration} ) {
+#    $metad->{spike_ins_concentration} = 'N/A';
+#}
 
 unless ( exists $metad->{icgc_donor_id} ) {
     $metad->{icgc_donor_id} = 'NONE';
@@ -167,6 +182,10 @@ unless ( exists $metad->{icgc_specimen_id} ) {
 
 unless ( exists $metad->{icgc_sample_id} ) {
     $metad->{icgc_sample_id} = 'NONE';
+}
+
+unless ( exists $metad->{accession} ) {
+    $metad->{accession} = 'NONE';
 }
 
 say 'GENERATING SUBMISSION';
@@ -203,7 +222,7 @@ sub upload_submission {
     if ( not $test && not $skip_upload ) {
         croak "ABORT: No cgsubmit installed, aborting!" if( system("which cgsubmit"));
         return 1 if ( run($cmd) );
-    }
+    } 
 
     my $log_file = 'upload.log';
     my $gt_upload_command = "cd $sub_path; gtupload -v -c $key -l ./$log_file -u ./manifest.xml; cd -";
@@ -230,8 +249,9 @@ sub generate_submission {
     my $submitter_sample_id = $m->{submitter_sample_id};
     my $submitter_specimen_id = $m->{submitter_specimen_id};
     my $submitter_donor_id = $m->{submitter_donor_id};
-    my $sample_uuid = $m->{SM};
-    my $aliquot_id = $m->{aliquot_id};
+    #my $sample_uuid = $m->{SM};
+    #my $aliquot_id = $m->{aliquot_id};
+    my $aliquot_id = $m->{SM};
     my @libraries = @{$m->{LB}};
     my @read_group_labels = @{$m->{ID}};
     my $platform = $m->{PL};
@@ -245,8 +265,9 @@ sub generate_submission {
     }
     my $md5_sum = $m->{md5sum};
     my $includes_spike_ins = $m->{includes_spike_ins};
-    my $spike_ins_fasta = $m->{spike_ins_fasta};
-    my $spike_ins_concentration = $m->{spike_ins_concentration};
+    my $spike_ins_content = $m->{spike_ins_content};
+    #my $spike_ins_concentration = $m->{spike_ins_concentration};
+    my $adaptor_sequence = $m->{adaptor_sequence};
     my $icgc_donor_id = $m->{icgc_donor_id};
     my $icgc_specimen_id = $m->{icgc_specimen_id};
     my $icgc_sample_id = $m->{icgc_sample_id};
@@ -259,7 +280,7 @@ sub generate_submission {
   <ANALYSIS center_name="$center_name" analysis_date="$datetime" >
     <TITLE>ICGC PanCancer FASTQ file tarball GNOS Upload</TITLE>
     <STUDY_REF accession="$accession" refcenter="$refcenter" refname="$study_name"/>
-    <DESCRIPTION>RNA-Seq fastq tarball upload for: $aliquot_id</DESCRIPTION>
+    <DESCRIPTION>WGBS fastq tarball upload for: $aliquot_id</DESCRIPTION>
     <ANALYSIS_TYPE>
       <REFERENCE_ALIGNMENT>
         <ASSEMBLY>
@@ -280,7 +301,7 @@ RUN
           <SEQUENCE accession="NA" data_block_name="NA" seq_label="NA"/>
         </SEQ_LABELS>
         <PROCESSING>
-          <DIRECTIVES>
+          <DIRECTIVES> 
             <alignment_includes_unaligned_reads>true</alignment_includes_unaligned_reads>
             <alignment_marks_duplicate_reads>false</alignment_marks_duplicate_reads>
             <alignment_includes_failed_reads>false</alignment_includes_failed_reads>
@@ -289,7 +310,7 @@ RUN
             <PIPE_SECTION>
               <STEP_INDEX>NA</STEP_INDEX>
               <PREV_STEP_INDEX>NA</PREV_STEP_INDEX>
-              <PROGRAM>gnos_upload_fastq.pl</PROGRAM>
+              <PROGRAM>gnos_upload_fastq_bsseq.pl</PROGRAM>
               <VERSION>1.03</VERSION>
               <NOTES></NOTES>
             </PIPE_SECTION>
@@ -335,12 +356,12 @@ RUN
         <VALUE>$includes_spike_ins</VALUE>
       </ANALYSIS_ATTRIBUTE>
       <ANALYSIS_ATTRIBUTE>
-        <TAG>spike_ins_fasta</TAG>
-        <VALUE>$spike_ins_fasta</VALUE>
+        <TAG>spike_ins_content</TAG>
+        <VALUE>$spike_ins_content</VALUE>
       </ANALYSIS_ATTRIBUTE>
       <ANALYSIS_ATTRIBUTE>
-        <TAG>spike_ins_concentration</TAG>
-        <VALUE>$spike_ins_concentration</VALUE>
+        <TAG>adaptor_sequence</TAG>
+        <VALUE>$adaptor_sequence </VALUE>
       </ANALYSIS_ATTRIBUTE>
       <ANALYSIS_ATTRIBUTE>
         <TAG>icgc_donor_id</TAG>
@@ -376,33 +397,17 @@ END
  <EXPERIMENT center_name="$center_name" alias="$expts[$i]">
   <STUDY_REF accession="$accession" refcenter="OICR" refname="$study_name"/>
     <DESIGN>
-      <DESIGN_DESCRIPTION>ICGC RNA-Seq Paired-End Experiment</DESIGN_DESCRIPTION>
+      <DESIGN_DESCRIPTION>ICGC Whole-Genome Bisulfite Sequencing Experiment</DESIGN_DESCRIPTION>
       <SAMPLE_DESCRIPTOR refcenter="OICR" refname="$aliquot_id"/>
       <LIBRARY_DESCRIPTOR>
         <LIBRARY_NAME>"$libraries[$i]"</LIBRARY_NAME>
-        <LIBRARY_STRATEGY>RNA-Seq</LIBRARY_STRATEGY>
-        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_STRATEGY>Bisulfite-Seq</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>GENOMIC</LIBRARY_SOURCE>
         <LIBRARY_SELECTION>$library_selection</LIBRARY_SELECTION>
         <LIBRARY_LAYOUT>
           <PAIRED/>
         </LIBRARY_LAYOUT>
       </LIBRARY_DESCRIPTOR>
-      <SPOT_DESCRIPTOR>
-        <SPOT_DECODE_SPEC>
-          <READ_SPEC>
-            <READ_INDEX>0</READ_INDEX>
-            <READ_CLASS>Application Read</READ_CLASS>
-            <READ_TYPE>Forward</READ_TYPE>
-            <BASE_COORD>1</BASE_COORD>
-          </READ_SPEC>
-          <READ_SPEC>
-            <READ_INDEX>1</READ_INDEX>
-            <READ_CLASS>Application Read</READ_CLASS>
-            <READ_TYPE>Reverse</READ_TYPE>
-            <BASE_COORD>47</BASE_COORD>
-          </READ_SPEC>
-        </SPOT_DECODE_SPEC>
-      </SPOT_DESCRIPTOR>
     </DESIGN>
     <PLATFORM>
       <ILLUMINA>
@@ -484,15 +489,15 @@ __END__
 
 =head1 NAME
  
-gnos_upload_fastq.pl - Generates metadata files and uploads metadata and fastq files into a GNOS repository
+gnos_upload_fastq_bsseq.pl - Generates metadata files and uploads metadata and fastq files into a GNOS repository
   
 =head1 VERSION
  
-This documentation refers to gnos_upload_fastq.pl version 1.0.3
+This documentation refers to gnos_upload_fastq_bsseq.pl version 1.0.3
  
 =head1 USAGE
 
- gnos_upload_fastq.pl  --fastq <your_fastq.tar.gz>  --fastq-md5sum-file <your_fastq.tar.gz.md5 --outdir <your_outdir> --upload-url <https://gtrepo-bsc.annailabs.com> --key <full/path/to/your/gnos_key.pem> --metadata <your_metadata_file.txt>;
+ gnos_upload_fastq_bsseq.pl  --fastq <your_fastq.tar.gz>  --fastq-md5sum-file <your_fastq.tar.gz.md5 --outdir <your_outdir> --upload-url <https://gtrepo-bsc.annailabs.com> --key <full/path/to/your/gnos_key.pem> --metadata <your_metadata_file.txt>;
   
 =head1 REQUIRED ARGUMENTS
 
