@@ -4,7 +4,7 @@
 
 gnos_upload_fastq_bsseq.pl is a tool, designed to be used manually, that uploads a single fastq.tar.gz file into a GNOS repository.
 
-This tool needs to produce fastq uploads that conform to the PanCancer fastq file upload spec, see https://wiki.oicr.on.ca/display/PANCANCER/PCAWG+RNA-Seq+fastq+Sequence+Submission+SOP+-+v0.9.
+This tool needs to produce fastq uploads that conform to the PanCancer fastq file upload spec, see https://wiki.oicr.on.ca/display/PANCANCER/PCAWG+WGBS+fastq+Sequence+GNOS+Submission+SOP+-+v+0.9.
 
 ## Dependencies for gnos_upload_fastq_bsseq.pl
 
@@ -51,27 +51,25 @@ gnos_upload_fastq_bsseq.pl  --fastq \<your_fastq.tar.gz\>  --fastq-md5sum-file \
 
 Here is an example of a metadata file. 
 """
-ID:121002_UNC11-SN627_0254_AC0WP5ACXX_3_GTCCGC
+ID:DKFZ:100618_SN500_0169_AD14BGACXX_1
 CN:DKFZ
+DT:2010-06-18T00:00:00.000+00:00
+LB:WGBS:DKFZ:ICGC_MB112
+PI:240
 PL:ILLUMINA
-PM:Illumina Genome Analyzer II
-LB:WGBS:DKFZ:Illumina TruSeq for 1e176d9d-dba9-4d41-946e-05b7f35eba64
-SM:1e176d9d-dba9-4d41-946e-05b7f35eba64
-PU:DKFZ:ICGC_MB1
-DT:2012-10-16T11:16:21.365
+PM:Illumina HiSeq 2000
+PU:DKFZ:100618_SN500_0169_AD14BGACXX_1
+aliquot_id:3e042387-8444-406a-bf64-07c29cf889ed
 dcc_project_code:PBCA-DE
-submitter_donor_id:0809ba8b-4ab6-4f43-934c-c1ccbc014a7e
-submitter_specimen_id:5f613800-55df-497f-a544-5b12cb9446ce
-submitter_sample_id:b3b3a27c-ee9a-42af-a6d1-9af5970a98b9
-dcc_specimen_type:Primary Tumour - solid tissue
-md5sum:d41d8cd98f00b204e9800998ecf8427e
-icgc_donor_id:DO48977
-icgc_specimen_id:SP107575
-icgc_sample_id:SA517451
+submitter_donor_id:ICGC_MB112
+submitter_specimen_id:ICGC_MB112
+submitter_sample_id:ICGC_MB112
+dcc_specimen_type:Primary tumour - solid tissue
+accession:EGAS00001000215
+md5sum:67cebf14e7e73664dab2d00b7b761faf
 library_selection:RANDOM
 library_type:stranded
 includes_spike_ins:yes
 spike_ins_content:unmethylated lambda phage
 adaptor_sequence:Illumina Early access methylation adapter oligo kit (1006132)
-accession:EGAS00001000561
 """
