@@ -50,7 +50,7 @@ gnos_upload_fastq_bsseq.pl  --fastq \<your_fastq.tar.gz\>  --fastq-md5sum-file \
 ## Notes About GNOS Analysis XML
 
 Here is an example of a metadata file. 
-"""
+
 ID:DKFZ:100618_SN500_0169_AD14BGACXX_1
 CN:DKFZ
 DT:2010-06-18T00:00:00.000+00:00
@@ -72,4 +72,3 @@ library_type:stranded
 includes_spike_ins:yes
 spike_ins_content:unmethylated lambda phage
 adaptor_sequence:Illumina Early access methylation adapter oligo kit (1006132)
-"""
