@@ -35,8 +35,8 @@ use lib "$Bin/../gt-download-upload-wrapper/lib/";
 # 4. Delete <SPOT_DESCRIPTOR> section from xml                                                          #
 # 5. Change the code name to gnos_upload_fastq_bsseq.pl, but keep the version number,                   #
 #    so it is more clear from which point the branching happens                                         #
-# 6. my $sample_uuid = $m->{SM}; is never used in the script, and SM is the same as aliquot_id,         #
-#    thus my $aliquot_id = $m->{SM};                                                                    #
+# 6. my $sample_uuid = $m->{SM}; is never used in the script, thus deleted                              #
+#                                                                        #
 #########################################################################################################
 
 #############
@@ -250,8 +250,7 @@ sub generate_submission {
     my $submitter_specimen_id = $m->{submitter_specimen_id};
     my $submitter_donor_id = $m->{submitter_donor_id};
     #my $sample_uuid = $m->{SM};
-    #my $aliquot_id = $m->{aliquot_id};
-    my $aliquot_id = $m->{SM};
+    my $aliquot_id = $m->{aliquot_id};
     my @libraries = @{$m->{LB}};
     my @read_group_labels = @{$m->{ID}};
     my $platform = $m->{PL};
