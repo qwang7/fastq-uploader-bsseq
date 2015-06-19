@@ -492,7 +492,7 @@ gnos_upload_fastq_bsseq.pl - Generates metadata files and uploads metadata and f
   
 =head1 VERSION
  
-This documentation refers to gnos_upload_fastq_bsseq.pl version 1.0.5
+This documentation refers to gnos_upload_fastq_bsseq.pl version 1.0.4
  
 =head1 USAGE
 
