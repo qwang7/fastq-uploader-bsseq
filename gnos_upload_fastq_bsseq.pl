@@ -12,7 +12,7 @@ use Data::UUID;
 use FindBin qw($Bin);
 use lib "$Bin/../gt-download-upload-wrapper/lib/";
 
-#use GNOS::Upload;
+use GNOS::Upload;
 
 #########################################################################################################
 # DESCRIPTION                                                                                           #
@@ -492,7 +492,7 @@ gnos_upload_fastq_bsseq.pl - Generates metadata files and uploads metadata and f
   
 =head1 VERSION
  
-This documentation refers to gnos_upload_fastq_bsseq.pl version 1.0.4
+This documentation refers to gnos_upload_fastq_bsseq.pl version 1.0.5
  
 =head1 USAGE
 
